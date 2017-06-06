@@ -1,0 +1,36 @@
+version: "2.0"
+
+services:
+    web:
+        image: nginx:latest
+        ports:
+            - "80:80"
+        volumes:
+            - ./site.conf:/etc/nginx/conf.d/site.conf
+        volumes_from:
+          - data
+        links:
+          - php
+          - db
+
+    php:
+        build: ./php7
+        volumes_from:
+          - data
+
+    db:
+        image: mariadb:10
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=1
+        ports:
+            - "3307:3306"
+        volumes:
+            - voldb:/var/lib/mysql
+    data:
+        image: busybox
+        volumes:
+            - //w/www/driveto/driveto.cz:/code
+
+volumes:
+    voldb:
+        driver: local
